@@ -1,9 +1,11 @@
+from typing import Union
 from lark import Transformer, Tree, Token
 from program import Program
 from program.assignment import DistAssignment, PolyAssignment
 from program.condition import Condition, Atom, Not, And, Or, TrueCond, FalseCond
 from program.distribution import distribution_factory, Distribution, Categorical
 from program.ifstatem import IfStatem
+from program.nondet import Nondet
 from program.type import type_factory, Type
 from utils import get_unique_var
 from .exceptions import ParseException
@@ -42,7 +44,14 @@ class StructureTransformer(Transformer):
         parameters = [str(p) for p in args[1:]]
         return distribution_factory(dist_name, parameters)
 
-    def if_statem(self, args) -> IfStatem:
+    def if_statem(self, args) -> Union[IfStatem, Nondet]:
+        if isinstance(args[0], Tree) and args[0].data == "nondet_condition":
+            if len(args) < 2 or len(args) > 3:
+                raise ParseException(f"Nondeterministic branching is only allowed one branch and an optional else branch.")
+            branch1 = args[1]
+            branch2 = args[2] if len(args) == 3 else []
+            return Nondet(branch1, branch2)
+
         conditions = [a for a in args if isinstance(a, Condition)]
         branches = [a for a in args if not isinstance(a, Condition)]
         else_branch = None
@@ -76,7 +85,7 @@ class StructureTransformer(Transformer):
         poly2 = str(args[2])
         return Atom(poly1, cop, poly2)
 
-    def condition(self, args) -> Condition:
+    def bool_condition(self, args) -> Condition:
         if len(args) == 1:
             return args[0]
         if len(args) == 2:

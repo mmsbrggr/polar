@@ -21,6 +21,11 @@ class ArgumentParser:
             help="Iteration number to evaluate the expressions at"
         )
         self.argument_parser.add_argument(
+            "--wp",
+            action="store_true",
+            default=False,
+        )
+        self.argument_parser.add_argument(
             "--simulate",
             action="store_true",
             default=False,

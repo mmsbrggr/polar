@@ -8,6 +8,7 @@ from .cornish_fisher_action import CornishFisherAction
 from .mc_combination_action import MCCombinationAction
 from .print_benchmark_action import PrintBenchmarkAction
 from .goals_action import GoalsAction
+from .wp_action import WpAction
 
 
 class ActionFactory:
@@ -28,5 +29,7 @@ class ActionFactory:
             return CornishFisherAction(cli_args)
         if cli_args.mc_comb is not None:
             return MCCombinationAction(cli_args)
+        if cli_args.wp:
+            return WpAction(cli_args)
 
         return PrintBenchmarkAction(cli_args)
