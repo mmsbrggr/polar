@@ -1,3 +1,5 @@
+from symengine.lib.symengine_wrapper import logical_not
+
 from .condition import Condition
 
 
@@ -40,6 +42,9 @@ class Not(Condition):
         if self.is_loop_guard:
             return self.copy()
         return self.cond.get_loop_guard()
+
+    def to_symengine_expr(self):
+        return logical_not(self.cond.to_symengine_expr())
 
     def __str__(self):
         return f"¬({self.cond})"

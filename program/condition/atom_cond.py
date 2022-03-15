@@ -1,11 +1,11 @@
 from typing import Dict
 
-from symengine.lib.symengine_wrapper import sympify, Zero, Symbol
+from symengine.lib.symengine_wrapper import sympify, Zero, Symbol, eq, logical_not
 
 from .or_cond import Or
 from .false_cond import FalseCond
 from .condition import Condition
-from .exceptions import ArithmConversionException, NormalizingException, EvaluationException
+from .exceptions import ArithmConversionException, NormalizingException, EvaluationException, ExprConversionException
 from utils import get_unique_var, get_valid_values, evaluate_cop
 from program.type import Finite
 
@@ -95,6 +95,21 @@ class Atom(Condition):
             result *= t
 
         return result
+
+    def to_symengine_expr(self):
+        if self.cop == "==":
+            return eq(self.poly1, self.poly2)
+        if self.cop == "/=":
+            return logical_not(eq(self.poly1, self.poly2))
+        if self.cop == "<=":
+            return self.poly1 <= self.poly2
+        if self.cop == "<":
+            return self.poly1 < self.poly2
+        if self.cop == ">=":
+            return self.poly1 >= self.poly2
+        if self.cop == ">":
+            return self.poly1 > self.poly2
+        raise ExprConversionException(f"Unknown comparison operator {self.cop}.")
 
     def is_implied_by_loop_guard(self):
         return self.is_loop_guard

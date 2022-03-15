@@ -1,3 +1,5 @@
+from symengine.lib.symengine_wrapper import logical_or
+
 from .condition import Condition
 from .false_cond import FalseCond
 
@@ -55,6 +57,9 @@ class Or(Condition):
             return self.copy()
         cond1_guard = self.cond1.get_loop_guard()
         return cond1_guard if cond1_guard is not None else self.cond2.get_loop_guard()
+
+    def to_symengine_expr(self):
+        return logical_or(self.cond1.to_symengine_expr(), self.cond2.to_symengine_expr())
 
     def __str__(self):
         return f"({self.cond1} ∨ {self.cond2})"

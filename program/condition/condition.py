@@ -36,6 +36,10 @@ class Condition(ABC):
         pass
 
     @abstractmethod
+    def to_symengine_expr(self) -> Expr:
+        pass
+
+    @abstractmethod
     def subs(self, substitutions):
         pass
 

@@ -9,3 +9,7 @@ class NormalizingException(Exception):
 
 class EvaluationException(Exception):
     pass
+
+
+class ExprConversionException(Exception):
+    pass

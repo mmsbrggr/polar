@@ -1,4 +1,4 @@
-from symengine.lib.symengine_wrapper import sympify
+from symengine.lib.symengine_wrapper import sympify, true
 from .condition import Condition
 
 
@@ -35,6 +35,9 @@ class TrueCond(Condition):
 
     def to_arithm(self, p):
         return sympify(1)
+
+    def to_symengine_expr(self):
+        return true
 
     def __str__(self):
         return "true"

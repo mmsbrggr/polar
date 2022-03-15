@@ -1,4 +1,4 @@
-from symengine.lib.symengine_wrapper import sympify, Expr
+from symengine.lib.symengine_wrapper import sympify, Expr, false
 from .condition import Condition
 
 
@@ -32,6 +32,9 @@ class FalseCond(Condition):
         if self.is_loop_guard:
             return self.copy()
         return None
+
+    def to_symengine_expr(self):
+        return false
 
     def __simple_copy__(self):
         return FalseCond()
