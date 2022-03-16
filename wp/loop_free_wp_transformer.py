@@ -4,6 +4,7 @@ from symengine.lib.symengine_wrapper import logical_and, true, logical_not
 from program.assignment import DistAssignment, PolyAssignment
 from program.ifstatem import IfStatem
 from program.nondet import Nondet
+from program.prob_branching import ProbBranching
 from .common import Expectation, simplify_expectation
 
 
@@ -21,7 +22,7 @@ class LoopFreeWpTransformer:
 
     @transform.register
     def _(self, dist_assignment: DistAssignment, expectation: Expectation):
-        return expectation
+        raise NotImplementedError("wp transformer for dist assignments not implemented.")
 
     @transform.register
     def _(self, poly_assignment: PolyAssignment, expectation: Expectation):
@@ -31,6 +32,15 @@ class LoopFreeWpTransformer:
                 c = condition.subs({poly_assignment.variable: poly})
                 e = prob * expr.subs({poly_assignment.variable: poly})
                 result.append((c, e))
+        return simplify_expectation(result)
+
+    @transform.register
+    def _(self, prob_branching: ProbBranching, expectation: Expectation):
+        expects = [self.transform(b, expectation) for b in prob_branching.branches]
+        result = []
+        for expect, prob in zip(expects, prob_branching.probs):
+            for branch_cond, branch_expr in expect:
+                result.append((branch_cond, prob * branch_expr))
         return simplify_expectation(result)
 
     @transform.register
@@ -50,8 +60,12 @@ class LoopFreeWpTransformer:
         for branch_cond, branch_expr in else_expect:
             result.append((logical_and(not_previous_cases, branch_cond), branch_expr))
 
-        return result
+        return simplify_expectation(result)
 
     @transform.register
     def _(self, nondet: Nondet, expectation: Expectation):
-        return expectation
+        raise NotImplementedError("TODO.")
+        #expect1 = self.transform(nondet.branch1, expectation)
+        #expect2 = self.transform(nondet.branch2, expectation)
+        #result = []
+        #return expectation

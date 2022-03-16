@@ -1,8 +1,6 @@
 while x > 0:
-    if x > 10:
+    if P(1/2):
         x = x + 1
-    elif x > 5:
-        x = 2*x
     else:
         x = x - 1
     end

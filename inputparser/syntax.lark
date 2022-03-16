@@ -10,9 +10,10 @@ dist: DIST_NAME "(" [arithm ("," arithm)*] ")"
 
 categorical: arithm ("{" arithm "}" arithm)+ ["{" arithm "}"]
 
-?condition: nondet_condition | bool_condition
+?condition: nondet_condition | bool_condition | prob_condition
 bool_condition: atom | NOT "(" bool_condition ")" | bool_condition (AND | OR) bool_condition | "(" bool_condition ")"
 nondet_condition: "*"
+prob_condition: "P(" arithm ")"
 atom: arithm COP arithm | TRUE | FALSE
 
 ?statem: assign
