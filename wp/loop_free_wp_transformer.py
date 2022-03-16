@@ -1,11 +1,11 @@
 from singledispatchmethod import singledispatchmethod
-from symengine.lib.symengine_wrapper import logical_and, true, logical_not
+from symengine.lib.symengine_wrapper import logical_and, true, logical_not, _min
 
 from program.assignment import DistAssignment, PolyAssignment
 from program.ifstatem import IfStatem
 from program.nondet import Nondet
 from program.prob_branching import ProbBranching
-from .common import Expectation, simplify_expectation
+from .common import Expectation, simplify_expectation, expand_expectation_exhaustively
 
 
 class LoopFreeWpTransformer:
@@ -64,8 +64,16 @@ class LoopFreeWpTransformer:
 
     @transform.register
     def _(self, nondet: Nondet, expectation: Expectation):
-        raise NotImplementedError("TODO.")
-        #expect1 = self.transform(nondet.branch1, expectation)
-        #expect2 = self.transform(nondet.branch2, expectation)
-        #result = []
-        #return expectation
+        expect1 = self.transform(nondet.branch1, expectation)
+        expect2 = self.transform(nondet.branch2, expectation)
+        expect1 = expand_expectation_exhaustively(expect1)
+        expect2 = expand_expectation_exhaustively(expect2)
+        expect1 = simplify_expectation(expect1)
+        expect2 = simplify_expectation(expect2)
+
+        result = []
+        for branch_cond1, branch_expr1 in expect1:
+            for branch_cond2, branch_expr2 in expect2:
+                result.append((logical_and(branch_cond1, branch_cond2), _min(branch_expr1, branch_expr2)))
+
+        return result
